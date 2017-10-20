@@ -1,3 +1,4 @@
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class BeanUtils {
             if (mapTo.keySet().contains(fieldInFromClass)) {
                 if (checkForSuperClass(mapFrom.get(fieldInFromClass).getClass(), mapTo.get(fieldInFromClass))) {
                     mapTo.get(fieldInFromClass).invoke(to, mapFrom.get(fieldInFromClass));
-                } else checkFloatInt(mapFrom.get(fieldInFromClass), mapTo.get(fieldInFromClass), to);
+                }
             }
         }
     }
@@ -32,7 +33,7 @@ public class BeanUtils {
     public static Map<String, Object> createMapforFrom(Method[] methods, Object from) throws InvocationTargetException, IllegalAccessException {
         Map<String, Object> fieldsInObject = new HashMap<>();
         for (Method method : methods) {
-            if (method.getName().substring(0, 3).equals("get")) {
+            if (method.getName().startsWith("get")) {
                 fieldsInObject.put(method.getName().substring(3), method.invoke(from));
             }
         }
@@ -42,7 +43,7 @@ public class BeanUtils {
     public static Map<String, Method> createMapforTo(Method[] methods, Object to) throws InvocationTargetException, IllegalAccessException {
         Map<String, Method> fieldsInObject = new HashMap<>();
         for (Method method : methods) {
-            if (method.getName().substring(0, 3).equals("set")) {
+            if (method.getName().startsWith("set")) {
                 fieldsInObject.put(method.getName().substring(3), method);
             }
         }
@@ -58,29 +59,7 @@ public class BeanUtils {
         return false;
     }
 
-    public static void checkFloatInt(Object from, Method setTo, Object to) throws InvocationTargetException, IllegalAccessException {
-        String setTypeName = setTo.getParameterTypes()[0].getName();
 
-        if (from instanceof Integer) {
-            Integer integerInt = (Integer) from;
-            if (setTypeName == "float" || setTypeName == "Float") {
-                float resultSet = integerInt.floatValue();
-                setTo.invoke(to, resultSet);
-            }
-            if (setTypeName == "int" || setTypeName == "Integer") {
-                int resultSet = integerInt.intValue();
-                setTo.invoke(to, resultSet);
-            }
-        }
-        if (from instanceof Float) {
-            Float floatFloat = (Float) from;
-            if (setTypeName == "float" || setTypeName == "Float") {
-                float resultSet = floatFloat.floatValue();
-                setTo.invoke(to, resultSet);
-            }
-        }
-
-    }
 
 
 }
